@@ -6,7 +6,7 @@ import EventItem from './EventItem';
 import Dropdown from '../Blog/Dropdown';
 
 const EventIndex = ({ events, basePath, categories, path }) => {
-  
+
   // const categoriesList = [
   //   { name: 'Everything', path: basePath },
   //   { name: 'Past Events', path: basePath+'/past/' },

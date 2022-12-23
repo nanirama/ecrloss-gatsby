@@ -36,7 +36,7 @@ const EventListTemplate = ({data, pageContext, path, location}) => {
         {name: 'Future Events', path: basePath + '/future/', subCats: futurenormalizedCats}
     ];
 
-    if (!events) return null;
+    if (!slicedArr) return null;
 
     return (
         <Layout location={location}>

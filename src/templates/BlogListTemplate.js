@@ -12,6 +12,8 @@ const BlogListTemplate = ({ data, pageContext, path, location }) => {
     allPrismicBlog: { edges: blogsData },
   } = data;
 
+  console.log('List blogs', blogsData);
+
   const { basePath, humanPageNumber, categories } = pageContext;
 
   const blogs = blogsData.map((blog) => blog.node);
@@ -81,6 +83,7 @@ export const data = graphql`
               gatsbyImageData(layout: CONSTRAINED)
             }
           }
+          last_publication_date
         }
       }
     }
