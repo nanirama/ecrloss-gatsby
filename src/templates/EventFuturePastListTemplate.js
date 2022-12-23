@@ -13,13 +13,14 @@ const EventFuturePastListTemplate = ({ pageContext, path, location }) => {
 //console.log('Data Content', pageContext)
 
 
-  
+
 
   const { basePath, paginationPath,humanPageNumber, categories, currentPage, numPages, data } = pageContext;
   //console.log('pageContext', data)
   const events = data.map((event) => {
     return event.node
   });
+
 //   const events = allPrismicEvent.map((event) => {.0
 //     return event.node
 //   });

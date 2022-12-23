@@ -16,6 +16,7 @@ const promiseWrapper = (promise) =>
     return result;
   });
 
+
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions;
   const templatesDir = path.resolve(__dirname, './src/templates');
@@ -178,12 +179,12 @@ exports.createPages = async ({ graphql, actions }) => {
     const basePath = DEFAULT_BLOG_BASE_PATH;
     const blogs = data.Blogs.edges;
 
-    blogs.forEach(({ node }) => {     
+    blogs.forEach(({ node }) => {
       let { category: { uid: categoryPath } = {} } = node.data;
       let blogURL = categoryPath
         ? `${basePath}/${categoryPath}/${node.uid}`
         : `${basePath}/${node.uid}`;
-  
+
       createPage({
         path: blogURL,
         component: templates.blog,
@@ -204,7 +205,7 @@ exports.createPages = async ({ graphql, actions }) => {
 
     categories = _.uniqWith(categories, _.isEqual);
 
-    const postsPerPage = DEFAULT_BLOG_POSTS_PER_PAGE; 
+    const postsPerPage = DEFAULT_BLOG_POSTS_PER_PAGE;
     paginate({
       createPage,
       items: blogs,
@@ -226,7 +227,7 @@ exports.createPages = async ({ graphql, actions }) => {
           blog.node.data.category && blog.node.data.category.uid === cat.uid
       );
       const categoryPath = `${basePath}/${cat.uid}`;
-  
+
       paginate({
         createPage,
         items: blogsWithCat,
@@ -257,7 +258,7 @@ exports.createPages = async ({ graphql, actions }) => {
 
     webinars.forEach(({ node }) => {
       let webinarURL = `webinar/${node.uid}`;
-  
+
       createPage({
         path: webinarURL,
         component: templates.webinar,
@@ -276,15 +277,15 @@ exports.createPages = async ({ graphql, actions }) => {
         faqCategories = faqCategories.concat(question.node.data.category);
       }
     });
-  
+
     faqCategories = _.uniqWith(faqCategories, _.isEqual);
-  
+
     faq.forEach(({ node }) => {
       let { category: { uid: categoryPath } = {} } = node.data;
       let questionURL = categoryPath
         ? `faq/${categoryPath}/${node.uid}`
         : `faq/${node.uid}`;
-  
+
       createPage({
         path: questionURL,
         component: templates.question,
@@ -294,10 +295,10 @@ exports.createPages = async ({ graphql, actions }) => {
         },
       });
     });
-  
+
     faqCategories.forEach((cat) => {
       const categoryPath = `faq/${cat.uid}`;
-  
+
       createPage({
         path: categoryPath,
         component: templates.questionList,
@@ -307,7 +308,7 @@ exports.createPages = async ({ graphql, actions }) => {
         },
       });
     });
-  
+
     createPage({
       path: 'faq',
       component: templates.faq,
@@ -334,7 +335,7 @@ exports.createPages = async ({ graphql, actions }) => {
 
     personPages.forEach(({ node }) => {
       let pageURL = `team/${node.uid}`;
-  
+
       createPage({
         path: pageURL,
         component: templates.person,
@@ -343,12 +344,12 @@ exports.createPages = async ({ graphql, actions }) => {
         },
       });
     });
-  
+
     const researchPages =data.Research.edges;
     let researchCategories = [];
     researchPages.forEach(({ node }) => {
       let pageURL = `research/${node.uid}`;
-  
+
       createPage({
         path: pageURL,
         component: templates.research,
@@ -357,7 +358,7 @@ exports.createPages = async ({ graphql, actions }) => {
         },
       });
 
-      
+
       _.each(researchPages, (item) => {
         if (_.get(item, 'node.data.category.uid')) {
           researchCategories = researchCategories.concat(item.node.data.category);
@@ -384,7 +385,7 @@ exports.createPages = async ({ graphql, actions }) => {
           item.node.data.category && item.node.data.category.uid === cat.uid
       );
       const categoryPath = `research/${cat.uid}`;
-  
+
       paginate({
         createPage,
         items: researchesWithCat,
@@ -403,20 +404,11 @@ exports.createPages = async ({ graphql, actions }) => {
     // Past and Future events getting
     const events = data.Events.edges;
     let eventCategories = [];
-    const PastEEvents = events.filter((item)=>{
-      let EventMoment = moment() > moment(item.node.data.start_date);
-      if(EventMoment===true)
-      {
-        return item;
-      }
-    });
-    const FutureEvents = events.filter((item)=>{
-      let EventMoment = moment() > moment(item.node.data.start_date);
-      if(EventMoment===false)
-      {
-        return item;
-      }
-    });   
+    const pastEvents = events.filter((item)=> moment() > moment(item.node.data.start_date));
+    const futureEvents = events.filter((item)=> moment() < moment(item.node.data.start_date));
+
+    const sortFutureEvents = [...futureEvents].sort((a, b)=> moment(a.node.data.start_date) - moment(b.node.data.start_date));
+    const arrOfSortedEvents = [...sortFutureEvents, ...pastEvents];
 
     // Event Single Page Generation
     events.forEach(({ node }) => {
@@ -439,18 +431,19 @@ exports.createPages = async ({ graphql, actions }) => {
     // Event Listing Page Generation
     paginate({
       createPage,
-      items: events,
+      items: arrOfSortedEvents,
       itemsPerPage: postsPerPage,
       pathPrefix: '/event',
       component: templates.eventList,
       context: {
+        sortedEvents: arrOfSortedEvents,
         basePath: '/event',
         paginationPath: '/event',
         categories: eventCategories,
       },
-    });  
+    });
 
-    const fposts = _.cloneDeep(FutureEvents);
+    const fposts = _.cloneDeep(futureEvents);
     const numfPages = Math.ceil(fposts.length / postsPerPage)
     Array.from({ length: numfPages }).forEach((_, i) => {
       createPage({
@@ -464,14 +457,14 @@ exports.createPages = async ({ graphql, actions }) => {
           numPages: numfPages,
           currentPage: i + 1,
           categories: eventCategories,
-          data : FutureEvents.slice(i*postsPerPage,(i + 1)*postsPerPage)
+          data : sortFutureEvents.slice(i*postsPerPage,(i + 1)*postsPerPage)
         },
       })
     });
 
 
 
-    const pposts = _.cloneDeep(PastEEvents);
+    const pposts = _.cloneDeep(pastEvents);
     const numpPages = Math.ceil(pposts.length / postsPerPage)
     Array.from({ length: numpPages }).forEach((_, i) => {
       createPage({
@@ -485,7 +478,7 @@ exports.createPages = async ({ graphql, actions }) => {
           numPages: numpPages,
           currentPage: i + 1,
           categories: eventCategories,
-          data : PastEEvents.slice(i*postsPerPage,(i + 1)*postsPerPage)
+          data : pastEvents.slice(i*postsPerPage,(i + 1)*postsPerPage)
         },
       })
     });
@@ -512,7 +505,7 @@ exports.createPages = async ({ graphql, actions }) => {
               data : feventWithCat.slice(i*postsPerPage,(i + 1)*postsPerPage)
             },
           })
-        }); 
+        });
     });
 
     let numppPages = 0
@@ -544,28 +537,3 @@ exports.createPages = async ({ graphql, actions }) => {
         });
     });
 };
-
-
-// eventCategories = _.uniqWith(eventCategories, _.isEqual);
-
-//     eventCategories.forEach((cat) => {
-//       const eventWithCat = events.filter(
-//         (item) =>
-//           item.node.data.category && item.node.data.category.uid === cat.uid
-//       );
-//       const categoryPath = `/event/${cat.uid}`;
-  
-//       paginate({
-//         createPage,
-//         items: eventWithCat,
-//         itemsPerPage: postsPerPage,
-//         pathPrefix: categoryPath,
-//         component: templates.eventCategoryList,
-//         context: {
-//           uid: cat.uid,
-//           basePath: '/event',
-//           paginationPath: categoryPath,
-//           categories: eventCategories,
-//         },
-//       });
-//     });
