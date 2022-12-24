@@ -101,10 +101,10 @@ const Grid2 = styled.div`
   grid-template-columns:1fr;
   grid-gap: 10px 20px;
   
-  @media (min-width: 850px) {
+  @media (min-width: 900px) {
     grid-template-columns: repeat(3, 1fr);
   }
-  @media only screen and (min-width: 701px) and (max-width: 850px) {
+  @media only screen and (min-width: 701px) and (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
 `;
