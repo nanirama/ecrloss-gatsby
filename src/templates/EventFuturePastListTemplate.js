@@ -8,32 +8,12 @@ import Seo from '../components/Seo';
 import { EventIndex } from '../components/Event';
 import Pagination from '../components/Pagination';
 
-const EventFuturePastListTemplate = ({ pageContext, path, location }) => {
-//   const { allPrismicEvent } = data;
-//console.log('Data Content', pageContext)
+const EventFuturePastListTemplate = ({ pageContext, location }) => {
+  const { basePath, paginationPath, categories, currentPage, numPages, data } = pageContext;
 
-
-
-
-  const { basePath, paginationPath,humanPageNumber, categories, currentPage, numPages, data } = pageContext;
-  //console.log('pageContext', data)
   const events = data.map((event) => {
     return event.node
   });
-
-//   const events = allPrismicEvent.map((event) => {.0
-//     return event.node
-//   });
-  // let pastEvents = [];
-  // let futureEvens = []
-  // eventsData.map((event) => {
-  //   let isPast = moment() > moment(event.node.data.start_date);
-  //   if(isPast){
-  //     pastEvents.push(event.node)
-  //   } else {
-  //     futureEvens.push(event.node)
-  //   }
-  // });
 
   const futurenormalizedCats = categories.map((cat) => ({
     path: `${basePath}/future/${cat.uid}/`,

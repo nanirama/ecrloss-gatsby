@@ -487,7 +487,7 @@ exports.createPages = async ({ graphql, actions }) => {
       const feventWithCat = fposts.filter(
         (item) =>
           item.node.data.category && item.node.data.category.uid === cat.uid
-      );
+      ).sort((a, b)=> moment(a.node.data.start_date) - moment(b.node.data.start_date));;
       const categoryPath = `/event/future/${cat.uid}`;
         numffPages = Math.ceil(feventWithCat.length / postsPerPage)
         Array.from({ length: numfPages }).forEach((_, i) => {

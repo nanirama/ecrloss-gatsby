@@ -13,11 +13,13 @@ const EventListTemplate = ({ data, pageContext, path,  location }) => {
     allPrismicEvent: { edges: eventsData },
   } = data;
 
+
+  console.log('EVENTS_LIST_TEMPLATE', eventsData);
+
   const { basePath, paginationPath, categories, humanPageNumber } = pageContext;
 
-  const events = eventsData.map((event) => {
-    return event.node
-  });
+  const events = eventsData.map((event) => event.node);
+
   let pastEvents = [];
   let futureEvens = []
   eventsData.map((event) => {
@@ -62,7 +64,7 @@ export const data = graphql`
   query($uid: String!, $skip: Int!, $limit: Int!) {
     allPrismicEvent(
       filter: {data: {category: {uid: {eq: $uid}}}}
-      sort: { fields: data___start_date, order: DESC }
+      sort: { fields: data___start_date, order: ASC }
       skip: $skip
       limit: $limit
     ) {
