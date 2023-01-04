@@ -16,7 +16,7 @@ const CategoryIndex = ({ blogs, basePath, categories, path }) => {
       </Box>
       <Container
         as="section"
-        variant="content"        
+        variant="content"
       >
         <Dropdown items={categories} path={path} />
       </Container>

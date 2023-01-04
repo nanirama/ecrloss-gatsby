@@ -7,13 +7,16 @@ import Seo from '../components/Seo';
 import PageBody from '../components/PageBody';
 import { Header } from '../components/Blog';
 import styled from "styled-components";
+import moment from "moment";
 
 const BlogTemplate = ({ data, pageContext, location }) => {
   const {
-    prismicBlog: { data: page },
+    prismicBlog: { data: page, last_publication_date },
   } = data;
 
   if (!page) return null;
+
+    const createdDate = moment(last_publication_date).format('ll');
 
   const {
     title,
@@ -41,16 +44,17 @@ const BlogTemplate = ({ data, pageContext, location }) => {
       />
       <Wrapper>
       <Container>
-      
+
       <Header
       title={title}
       author={author}
       category={category}
-    
+      createdDate={createdDate}
+
         image={image}
         basePath={pageContext.basePath}
       />
-     
+
      </Container>
      </Wrapper>
      <PageContainer>
@@ -69,6 +73,7 @@ export default BlogTemplate;
 export const query = graphql`
   query BlogBySlug($uid: String!) {
     prismicBlog(uid: { eq: $uid }) {
+    last_publication_date
       data {
         title {
           html
