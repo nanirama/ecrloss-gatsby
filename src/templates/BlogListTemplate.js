@@ -81,6 +81,7 @@ export const data = graphql`
               gatsbyImageData(layout: CONSTRAINED)
             }
           }
+          last_publication_date
         }
       }
     }
